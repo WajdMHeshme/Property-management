@@ -6,42 +6,32 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-       Schema::create('properties', function (Blueprint $table) {
-    $table->id();
+        Schema::create('properties', function (Blueprint $table) {
+            $table->id();
+            // Owner (optional) — اربطه ب users إذا موجود
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
 
-    $table->string('title');
+            $table->string('title');
+            $table->foreignId('property_type_id')->nullable()->constrained('property_types')->cascadeOnDelete();
 
-    $table->foreignId('property_type_id')
-          ->constrained('property_types')
-          ->cascadeOnUpdate()
-          ->restrictOnDelete();
+            $table->string('city')->nullable();
+            $table->string('neighborhood')->nullable();
+            $table->string('address')->nullable();
 
-    $table->string('city');
-    $table->string('neighborhood');
-    $table->string('address');
+            $table->unsignedInteger('rooms')->default(0);
+            $table->decimal('area', 10, 2)->nullable()->comment('Area in square meters (or units)');
+            $table->decimal('price', 12, 2)->default(0);
+            $table->enum('status', ['available', 'booked', 'rented', 'hidden'])->default('available');
 
-    $table->integer('rooms');
-    $table->float('area');
-    $table->decimal('price', 10, 2);
+            $table->text('description')->nullable();
+            $table->boolean('is_furnished')->default(false);
 
-    $table->enum('status',['available' ,'rented','pending'])->default('available');
-    $table->text('description');
-
-    $table->boolean('is_furnished')->default(false);
-
-    $table->timestamps();
-});
-
+            $table->timestamps();
+        });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('properties');

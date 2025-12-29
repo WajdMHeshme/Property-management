@@ -8,18 +8,18 @@ use Illuminate\Support\Facades\Auth;
 
 class ReviewController extends Controller
 {
-    protected $ratingService;
+    protected $reviewService;
 
-    public function __construct(ReviewService $ratingService)
+    public function __construct(ReviewService $reviewService)
     {
-        $this->ratingService = $ratingService;
+        $this->reviewService = $reviewService;
     }
 
     public function store(StoreReviewRequest $request)
     {
         $data = $request->validated();
 
-        $review = $this->ratingService->addRating(Auth::id(),$data);
+        $review = $this->reviewService->addRating(Auth::id(),$data);
 
         return response()->json([
             'message' => 'Rating added successfully',

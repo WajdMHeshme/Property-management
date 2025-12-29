@@ -25,8 +25,8 @@ return new class extends Migration
           ->constrained('bookings')
           ->cascadeOnDelete();
 
-    $table->integer('rating');
-    $table->text('comment')->nullable();
+    $table->unsignedTinyInteger('rating');
+    $table->text(column: 'comment')->nullable();
             $table->timestamps();
 
            $table->unique(['user_id', 'property_id']);

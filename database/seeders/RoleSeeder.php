@@ -1,7 +1,9 @@
 <?php
 
 namespace Database\Seeders;
- use App\Models\Role;
+
+ use Spatie\Permission\Models\Role;
+
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -10,13 +12,11 @@ class RoleSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void
+      public function run(): void
     {
-        //
-        Role::insert([
-    ['name' => 'admin', 'guard_name' => 'web'],
-    ['name' => 'employee', 'guard_name' => 'web'],
-    ['name' => 'customer', 'guard_name' => 'web'],
-    ]);
+        Role::firstOrCreate(['name' => 'admin']);
+        Role::firstOrCreate(['name' => 'employee']);
+        Role::firstOrCreate(['name' => 'customer']);
     }
-}
+    }
+

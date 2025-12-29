@@ -2,38 +2,41 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RegisterUserRequest;
 use App\Models\User;
-use App\Models\Role;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
+    // ✅ Register
+    public function register(RegisterUserRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:6',
-        ]);
-
-        $userRole = Role::where('name', 'customer')->firstOrFail();
-
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+        $user = User::create([
+            'name'     => $request->name,
+            'email'    => $request->email,
             'password' => Hash::make($request->password),
-            'role_id' => $userRole->id,
         ]);
 
-        return response()->json(['message' => 'User registered successfully'], 201);
+        // ✅ Spatie role
+        $user->assignRole('customer');
+
+        // إنشاء توكن
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'User registered successfully',
+            'token'   => $token,
+            'roles'   => $user->getRoleNames(), // 
+        ], 201);
     }
 
+    // ✅ Login
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'email'    => 'required|email',
             'password' => 'required',
         ]);
 
@@ -42,15 +45,16 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
+//delete token
+        $user->tokens()->delete();
 
-        // (اختياري) حذف التوكنات القديمة
-        //$user->tokens()->delete();
-
+        // new token
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'token' => $token,
-            'role' => $user->role->name,
+            'roles' => $user->getRoleNames(), // ✅ Spatie
+            'user'  => $user,
         ]);
     }
 }

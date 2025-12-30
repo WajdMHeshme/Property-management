@@ -12,17 +12,18 @@ class RoleMiddleware
     {
         $user = $request->user();
 
-        // إذا لم يكن مسجّل دخول
+        // Check if user is not authenticated
         if (!$user) {
             return response()->json(['message' => 'Unauthenticated'], 401);
         }
 
-        // إذا دوره غير مسموح
-        if (!in_array($user->role->name, $roles)) {
-            return response()->json(['message' => 'Forbidden'], 403);
+        // Check if user does NOT have any of the allowed roles
+        // hasAnyRole() is provided by Spatie Permission
+        if (!$user->hasAnyRole($roles)) {
+            return response()->json(['message' => 'Forbidden - Access denied'], 403);
         }
 
+        // Allow request to continue
         return $next($request);
     }
 }
-

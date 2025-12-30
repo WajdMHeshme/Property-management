@@ -12,11 +12,9 @@ class StoreEmployeeRequest extends FormRequest
 {
     $user = Auth::user();
 
-    return $user
-        && $user->role
-        && $user->role->name === 'admin';
+   return Auth::user()?->hasRole('admin');
+      
 }
-
 
     /**
      * Get the validation rules that apply to the request.

@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\View;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\PropertyResource;
 use App\Http\Requests\StorePropertyRequest;
 use App\Http\Requests\UpdatePropertyRequest;
 use App\Models\Property;
@@ -17,73 +16,110 @@ class PropertyController extends Controller
     public function __construct(PropertyService $propertyService)
     {
         $this->propertyService = $propertyService;
+
+        // Protect all pages so only admin users can access
+        $this->middleware(['auth', 'checkRole:admin']);
+
     }
 
     /**
-     * Display a listing of the resource.
-     * GET /admin/properties
+     * GET /dashboard/admin/properties
+     * Displays the list of properties (index.blade.php)
      */
     public function index(Request $request)
     {
-        // Pass query params to service for filtering/sorting/pagination
+        // Use the same filters as in the service (page, limit, other filters)
         $properties = $this->propertyService->getAll($request->all());
 
-        // PropertyResource::collection works with paginators too
-        return PropertyResource::collection($properties);
+        return view('dashboard.admin.properties.index', compact('properties'));
     }
 
     /**
-     * Store a newly created resource in storage.
-     * POST /admin/properties
+     * GET /dashboard/admin/properties/create
+     * Shows the form to create a new property (create.blade.php)
+     */
+    public function create()
+    {
+        // If you need to load data for form options (types, amenities), do it here
+        // $types = PropertyType::all();
+        // $amenities = Amenity::all();
+
+        return view('dashboard.admin.properties.create' /*, compact('types','amenities') */);
+    }
+
+    /**
+     * POST /dashboard/admin/properties
+     * Stores a new property in the database
      */
     public function store(StorePropertyRequest $request)
     {
-        $property = $this->propertyService->create(
-            $request->validated()
-        );
+        $data = $request->validated();
 
-        return new PropertyResource(
-            $property->load(['propertyType', 'mainImage', 'amenities'])
-        );
+        $this->propertyService->create($data);
+
+        return redirect()
+            ->route('admin.properties.index')
+            ->with('success', 'Property has been successfully added.');
     }
 
     /**
-     * Display the specified resource.
-     * GET /admin/properties/{property}
+     * GET /dashboard/admin/properties/{property}
+     * Shows a single property details (show.blade.php)
      */
     public function show(Property $property)
     {
-        return new PropertyResource(
-            $property->load(['propertyType', 'mainImage', 'amenities'])
-        );
+        $property->load(['propertyType', 'mainImage', 'amenities']);
+
+        return view('dashboard.admin.properties.show', compact('property'));
     }
 
     /**
-     * Update the specified resource in storage.
-     * PUT /admin/properties/{property}
+     * GET /dashboard/admin/properties/{property}/edit
+     * Shows the form to edit a property (edit.blade.php)
+     */
+    public function edit(Property $property)
+    {
+        $property->load(['propertyType', 'amenities']);
+        // $types = PropertyType::all();
+        // $amenities = Amenity::all();
+
+        return view('dashboard.admin.properties.edit' /*, compact('property','types','amenities') */, compact('property'));
+    }
+
+    /**
+     * PUT /dashboard/admin/properties/{property}
+     * Updates a property in the database
      */
     public function update(UpdatePropertyRequest $request, Property $property)
     {
-        $property = $this->propertyService->update(
-            $property,
-            $request->validated()
-        );
+        $data = $request->validated();
 
-        return new PropertyResource(
-            $property->load(['propertyType', 'mainImage', 'amenities'])
-        );
+        $this->propertyService->update($property, $data);
+
+        return redirect()
+            ->route('admin.properties.index')
+            ->with('success', 'Property has been successfully updated.');
     }
 
     /**
-     * Remove the specified resource from storage.
-     * DELETE /admin/properties/{property}
+     * DELETE /dashboard/admin/properties/{property}
+     * Deletes a property from the database
      */
     public function destroy(Property $property)
     {
         $this->propertyService->delete($property);
 
-        return response()->json([
-            'message' => 'Property deleted successfully'
-        ]);
+        return redirect()
+            ->route('admin.properties.index')
+            ->with('success', 'Property has been successfully deleted.');
+    }
+
+    /**
+     * GET /dashboard/admin/properties/types
+     * Shows the property types management page (types.blade.php)
+     */
+    public function types()
+    {
+        return view('dashboard.admin.properties.types');
     }
 }

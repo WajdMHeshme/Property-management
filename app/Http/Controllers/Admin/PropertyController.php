@@ -11,45 +11,52 @@ use Illuminate\Http\Request;
 
 class PropertyController extends Controller
 {
+    /**
+     * Property service instance
+     */
     protected PropertyService $propertyService;
 
+    /**
+     * Constructor
+     *
+     * Apply authentication and admin role middleware
+     */
     public function __construct(PropertyService $propertyService)
     {
         $this->propertyService = $propertyService;
 
-        // Protect all pages so only admin users can access
+        // Ensure only authenticated admin users can access these pages
         $this->middleware(['auth', 'checkRole:admin']);
-
     }
 
     /**
+     * Display a listing of properties
+     *
      * GET /dashboard/admin/properties
-     * Displays the list of properties (index.blade.php)
      */
     public function index(Request $request)
     {
-        // Use the same filters as in the service (page, limit, other filters)
+        // Retrieve properties with filters (pagination, search, etc.)
         $properties = $this->propertyService->getAll($request->all());
 
-        return view('dashboard.admin.properties.index', compact('properties'));
+        // Note: No "admin" folder in views
+        return view('dashboard.properties.index', compact('properties'));
     }
 
     /**
+     * Show the form for creating a new property
+     *
      * GET /dashboard/admin/properties/create
-     * Shows the form to create a new property (create.blade.php)
      */
     public function create()
     {
-        // If you need to load data for form options (types, amenities), do it here
-        // $types = PropertyType::all();
-        // $amenities = Amenity::all();
-
-        return view('dashboard.admin.properties.create' /*, compact('types','amenities') */);
+        return view('dashboard.properties.create');
     }
 
     /**
+     * Store a newly created property in storage
+     *
      * POST /dashboard/admin/properties
-     * Stores a new property in the database
      */
     public function store(StorePropertyRequest $request)
     {
@@ -63,32 +70,33 @@ class PropertyController extends Controller
     }
 
     /**
+     * Display the specified property
+     *
      * GET /dashboard/admin/properties/{property}
-     * Shows a single property details (show.blade.php)
      */
     public function show(Property $property)
     {
         $property->load(['propertyType', 'mainImage', 'amenities']);
 
-        return view('dashboard.admin.properties.show', compact('property'));
+        return view('dashboard.properties.show', compact('property'));
     }
 
     /**
+     * Show the form for editing the specified property
+     *
      * GET /dashboard/admin/properties/{property}/edit
-     * Shows the form to edit a property (edit.blade.php)
      */
     public function edit(Property $property)
     {
         $property->load(['propertyType', 'amenities']);
-        // $types = PropertyType::all();
-        // $amenities = Amenity::all();
 
-        return view('dashboard.admin.properties.edit' /*, compact('property','types','amenities') */, compact('property'));
+        return view('dashboard.properties.edit', compact('property'));
     }
 
     /**
+     * Update the specified property in storage
+     *
      * PUT /dashboard/admin/properties/{property}
-     * Updates a property in the database
      */
     public function update(UpdatePropertyRequest $request, Property $property)
     {
@@ -102,8 +110,9 @@ class PropertyController extends Controller
     }
 
     /**
+     * Remove the specified property from storage
+     *
      * DELETE /dashboard/admin/properties/{property}
-     * Deletes a property from the database
      */
     public function destroy(Property $property)
     {
@@ -115,11 +124,12 @@ class PropertyController extends Controller
     }
 
     /**
+     * Display property types management page
+     *
      * GET /dashboard/admin/properties/types
-     * Shows the property types management page (types.blade.php)
      */
     public function types()
     {
-        return view('dashboard.admin.properties.types');
+        return view('dashboard.properties.types');
     }
 }

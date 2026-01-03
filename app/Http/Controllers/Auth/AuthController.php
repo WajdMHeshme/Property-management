@@ -13,7 +13,6 @@ class AuthController extends Controller
 
 public function register(RegisterUserRequest $request)
 {
-
     $user=User::create([
         'name'=>$request->name,
         'email'=>$request->email,
@@ -55,8 +54,6 @@ public function login(Request $request)
 
 public function logout(Request $request)
 {
-
-    
     $request->user()->currentAccessToken()->delete();
     return response()->json([
         'message'=>'Logout Successfully'

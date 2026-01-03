@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Booking;
 use App\Models\Review;
+use App\Models\User;
 use App\Models\Property;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\DB;
@@ -76,5 +77,13 @@ class ReviewService
 
             return $review;
         });
+    }
+    public function toggleUserStatus(int $userId, bool $status): User
+    {
+    $user = User::findOrFail($userId);
+
+    $user->update(['is_active' => $status]);
+
+    return $user;
     }
 }

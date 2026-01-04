@@ -2,40 +2,238 @@
 
 @section('content')
 
-<h2 class="text-xl font-bold mb-4">
-    Bookings Management
-</h2>
+<div class="lg:ml-64 px-6 py-8">
 
-@if($bookings->count())
+    {{-- Filters Bar --}}
+    <div class="flex flex-wrap items-center gap-3 mb-6">
 
-<table class="table-auto w-full">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Customer</th>
-            <th>Status</th>
-            <th>Date</th>
-        </tr>
-    </thead>
+        {{-- Status Filter --}}
+        <form method="GET">
+            <select name="status"
+                    onchange="this.form.submit()"
+                    class="border rounded-lg px-3 py-2 text-sm bg-white">
+                <option value="">All Status</option>
+                <option value="pending"   {{ request('status')=='pending' ? 'selected' : '' }}>Pending</option>
+                <option value="approved"  {{ request('status')=='approved' ? 'selected' : '' }}>Approved</option>
+                <option value="rescheduled" {{ request('status')=='rescheduled' ? 'selected' : '' }}>Rescheduled</option>
+                <option value="completed" {{ request('status')=='completed' ? 'selected' : '' }}>Completed</option>
+                <option value="rejected"  {{ request('status')=='rejected' ? 'selected' : '' }}>Rejected</option>
+                <option value="canceled"  {{ request('status')=='canceled' ? 'selected' : '' }}>Canceled</option>
+            </select>
+        </form>
 
-    <tbody>
-        @foreach($bookings as $booking)
-        <tr>
-            <td>{{ $booking->id }}</td>
-            <td>{{ $booking->customer_name ?? '-' }}</td>
-            <td>{{ $booking->status }}</td>
-            <td>{{ $booking->created_at->format('Y-m-d') }}</td>
-        </tr>
-        @endforeach
-    </tbody>
-</table>
+        {{-- Quick Tabs --}}
+        <div class="flex gap-2">
 
-{{ $bookings->links() }}
+            <a href="{{ url('dashboard/bookings') }}"
+               class="px-3 py-1.5 rounded-lg text-sm border
+               {{ !request('status') ? 'bg-indigo-50 text-indigo-700 border-indigo-300 font-semibold'
+                                      : 'text-gray-600 hover:bg-gray-50' }}">
+                All
+            </a>
 
-@else
+            <a href="?status=pending"
+               class="px-3 py-1.5 rounded-lg text-sm border
+               {{ request('status')=='pending' ? 'bg-yellow-50 text-yellow-700 border-yellow-300 font-semibold'
+                                               : 'text-gray-600 hover:bg-gray-50' }}">
+                Pending
+            </a>
 
-<p>No bookings found.</p>
+            <a href="?status=approved"
+               class="px-3 py-1.5 rounded-lg text-sm border
+               {{ request('status')=='approved' ? 'bg-green-50 text-green-700 border-green-300 font-semibold'
+                                                : 'text-gray-600 hover:bg-gray-50' }}">
+                Approved
+            </a>
 
-@endif
+            <a href="?status=rejected"
+               class="px-3 py-1.5 rounded-lg text-sm border
+               {{ request('status')=='rejected' ? 'bg-red-50 text-red-700 border-red-300 font-semibold'
+                                                : 'text-gray-600 hover:bg-gray-50' }}">
+                Rejected
+            </a>
+
+            <a href="?status=canceled"
+               class="px-3 py-1.5 rounded-lg text-sm border
+               {{ request('status')=='canceled' ? 'bg-gray-100 text-gray-700 border-gray-300 font-semibold'
+                                                 : 'text-gray-600 hover:bg-gray-50' }}">
+                Canceled
+            </a>
+
+        </div>
+
+    </div>
+
+
+    {{-- Cards --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+
+        @forelse($bookings as $booking)
+
+        <div class="bg-white border rounded-xl shadow-sm p-4">
+
+            {{-- Property --}}
+            <h3 class="font-semibold text-gray-900">
+                {{ $booking->property->title }}
+            </h3>
+
+            <p class="text-sm text-gray-500">
+                {{ $booking->property->city ?? '' }}
+            </p>
+
+
+            {{-- Customer --}}
+            <div class="mt-3 flex items-center gap-2">
+
+                {{-- Filled User Icon --}}
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="w-5 h-5 text-black"
+                     viewBox="0 0 24 24" fill="currentColor">
+                    <path fill-rule="evenodd"
+                          d="M12 2.25a4.5 4.5 0 014.5 4.5v.75a4.5 4.5 0 11-9 0V6.75a4.5 4.5 0 014.5-4.5zm-7.5 17.1a7.5 7.5 0 0115 0v.15A2.25 2.25 0 0117.25 21h-10.5A2.25 2.25 0 014.5 19.5v-.15z"
+                          clip-rule="evenodd" />
+                </svg>
+
+                <div>
+                    <p class="text-sm text-gray-800 font-medium">
+                        {{ $booking->user->name }}
+                    </p>
+
+                    <p class="text-xs text-gray-500">
+                        {{ $booking->user->email }}
+                    </p>
+                </div>
+
+            </div>
+
+
+            {{-- Employee (Admin only) --}}
+            @if(auth()->user()->hasRole('admin') && $booking->employee)
+
+            <div class="mt-2 flex items-center gap-2">
+
+                {{-- Filled Briefcase Icon --}}
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="w-5 h-5 text-black"
+                     viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 2.25h6A2.25 2.25 0 0117.25 4.5V6H6.75V4.5A2.25 2.25 0 019 2.25z" />
+                    <path fill-rule="evenodd"
+                          d="M3.75 7.5A2.25 2.25 0 016 5.25h12A2.25 2.25 0 0120.25 7.5v9A2.25 2.25 0 0118 18.75H6A2.25 2.25 0 013.75 16.5v-9z"
+                          clip-rule="evenodd" />
+                </svg>
+
+                <p class="text-sm text-indigo-700 font-semibold">
+                    Assigned To: {{ $booking->employee->name }}
+                </p>
+
+            </div>
+            @endif
+
+
+            {{-- Schedule --}}
+            <div class="mt-3 flex items-center gap-2">
+
+                {{-- Filled Calendar Icon --}}
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="w-5 h-5 text-black"
+                     viewBox="0 0 24 24" fill="currentColor">
+                    <path fill-rule="evenodd"
+                          d="M6.75 2.25a.75.75 0 01.75.75V4.5h9V3a.75.75 0 011.5 0v1.5h.75A2.25 2.25 0 0121 6.75v12A2.25 2.25 0 0118.75 21H5.25A2.25 2.25 0 013 18.75v-12A2.25 2.25 0 015.25 4.5H6V3a.75.75 0 01.75-.75zM3.75 9h16.5v9.75a.75.75 0 01-.75.75H4.5a.75.75 0 01-.75-.75V9z"
+                          clip-rule="evenodd" />
+                </svg>
+
+                <p class="text-sm text-gray-700">
+                    <span class="font-medium">
+                        {{ $booking->scheduled_at }}
+                    </span>
+                </p>
+
+            </div>
+
+
+            {{-- Status --}}
+            <div class="mt-3">
+                <span class="px-3 py-1 rounded-lg text-xs border
+                    @if($booking->status=='pending')
+                        bg-yellow-50 text-yellow-700 border-yellow-300
+                    @elseif($booking->status=='approved')
+                        bg-green-50 text-green-700 border-green-300
+                    @elseif($booking->status=='rescheduled')
+                        bg-blue-50 text-blue-700 border-blue-300
+                    @elseif($booking->status=='completed')
+                        bg-emerald-50 text-emerald-700 border-emerald-300
+                    @elseif($booking->status=='rejected')
+                        bg-red-50 text-red-700 border-red-300
+                    @elseif($booking->status=='canceled')
+                        bg-gray-100 text-gray-700 border-gray-300
+                    @endif">
+                    {{ ucfirst($booking->status) }}
+                </span>
+            </div>
+
+
+            {{-- Actions --}}
+            <div class="mt-4 flex gap-2">
+
+                @if(
+                    $booking->status == 'pending' &&
+                    (
+                        auth()->user()->hasRole('admin')
+                        || $booking->employee_id == auth()->id()
+                    )
+                )
+
+                    {{-- Approve --}}
+                    <form method="POST"
+                          action="{{ route('employee.bookings.approve', $booking->id) }}">
+                        @csrf
+                        @method('PATCH')
+
+                        <button class="px-3 py-1.5 text-xs rounded-lg bg-green-600 text-white hover:bg-green-700">
+                            Approve
+                        </button>
+                    </form>
+
+                    {{-- Reject --}}
+                    <form method="POST"
+                          action="{{ route('employee.bookings.reject', $booking->id) }}">
+                        @csrf
+                        @method('PATCH')
+
+                        <button class="px-3 py-1.5 text-xs rounded-lg bg-red-600 text-white hover:bg-red-700">
+                            Reject
+                        </button>
+                    </form>
+
+                @endif
+
+
+                {{-- View --}}
+                <a href="{{ route('employee.bookings.show', $booking->id) }}"
+                   class="px-3 py-1.5 text-xs rounded-lg border hover:bg-gray-50">
+                    View Details
+                </a>
+
+            </div>
+
+        </div>
+
+        @empty
+
+        <p class="text-gray-500 text-sm">
+            No bookings found for this filter.
+        </p>
+
+        @endforelse
+
+    </div>
+
+
+    {{-- Pagination --}}
+    <div class="mt-6">
+        {{ $bookings->links() }}
+    </div>
+
+</div>
 
 @endsection

@@ -29,12 +29,10 @@ class PropertyController extends Controller
      */
     public function index(): View
     {
-        // اقرأ الفلاتر من query string
         $filters = request()->only([
             'amenity_ids', 'type', 'city', 'min_price', 'max_price', 'sort', 'order', 'limit'
         ]);
 
-        // استعمل الدالة المخصصة للباجينيشن
         $properties = $this->propertyService->getPaginated($filters);
 
         $amenities = $this->amenityService->getAll();

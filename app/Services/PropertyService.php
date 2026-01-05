@@ -44,7 +44,7 @@ class PropertyService
             'propertyType',
             'mainImage',
             'amenities',
-            'images' // لو حاب تعرض الصور في ال view
+            'images'
         ]);
 
         // Filtering basic fields

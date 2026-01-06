@@ -90,7 +90,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:admin')->prefix('admin')->group(function () {
 
         Route::get('/dashboard', [AdminAdminController::class, 'dashboard']);
-        Route::post('/add-employee', [AdminAdminController::class, 'addEmployee']);
+        Route::post('/add-employee', [AdminAdminController::class, 'store']);
 
         // Property CRUD (protected) — exclude index & show because they are public above
         Route::apiResource('properties', PropertyController::class)

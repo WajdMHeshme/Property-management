@@ -48,13 +48,6 @@ class AdminController extends Controller
             $userId,
             $request->is_active
         );
-
-        return response()->json([
-            'message' => $request->is_active
-                ? 'User account activated successfully'
-                : 'User account disabled successfully',
-            'user' => $user
-        ]);
     }
 
     // Change the password

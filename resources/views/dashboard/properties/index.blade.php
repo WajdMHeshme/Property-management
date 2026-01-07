@@ -12,7 +12,9 @@
 
     {{-- flash --}}
     @if(session('success'))
-        <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">{{ session('success') }}</div>
+        <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">
+            {{ session('success') }}
+        </div>
     @endif
 
     {{-- Filters --}}
@@ -33,7 +35,6 @@
             <input type="number"
                    name="min_price"
                    value="{{ $filters['min_price'] ?? '' }}"
-                   placeholder="0"
                    class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
         </div>
 
@@ -43,14 +44,13 @@
             <input type="number"
                    name="max_price"
                    value="{{ $filters['max_price'] ?? '' }}"
-                   placeholder="10000"
                    class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
         </div>
 
         {{-- Actions --}}
         <div class="flex items-end gap-2">
             <button type="submit"
-                    class="w-full px-4 py-2 bg-indigo-600 text-white rounded-full font-medium hover:bg-indigo-500 transition">
+                    class="w-full px-4 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-500 transition">
                 Filter
             </button>
             <a href="{{ route('dashboard.properties.index') }}"
@@ -59,12 +59,9 @@
             </a>
         </div>
 
-        {{-- Amenities (full width) --}}
+        {{-- Amenities --}}
         <div class="md:col-span-4">
-            <label class="block mb-2 text-sm font-medium text-gray-700">
-                Amenities
-            </label>
-
+            <label class="block mb-2 text-sm font-medium text-gray-700">Amenities</label>
             <div class="flex flex-wrap gap-2">
                 @foreach($amenities as $amenity)
                     <label class="inline-flex items-center bg-gray-100 rounded-full px-3 py-1 cursor-pointer hover:bg-indigo-50 transition">
@@ -83,48 +80,52 @@
     {{-- Properties Grid --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse($properties as $property)
-            @php
-                $firstImage = $property->images->first();
-                $extraImages = $property->images->count() - 1;
-            @endphp
-            <div class="border rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition relative bg-white">
-                <div class="relative h-52 bg-gray-100">
-                    @if($firstImage)
-                        <img src="{{ asset('storage/' . $firstImage->path) }}" alt="{{ $firstImage->alt ?? $property->title }}"
+            <div class="border rounded-2xl shadow-lg overflow-hidden bg-white hover:shadow-2xl transition">
+                <div class="h-52 bg-gray-100">
+                    @if($property->images->first())
+                        <img src="{{ asset('storage/'.$property->images->first()->path) }}"
                              class="w-full h-52 object-cover">
-                        @if($extraImages > 0)
-                            <div class="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full font-semibold">
-                                +{{ $extraImages }}
-                            </div>
-                        @endif
                     @else
-                        <div class="flex items-center justify-center h-52 text-gray-400">No Image</div>
+                        <div class="flex items-center justify-center h-52 text-gray-400">
+                            No Image
+                        </div>
                     @endif
                 </div>
 
                 <div class="p-4">
-                    <h2 class="text-lg font-semibold mb-1 text-gray-900">{{ $property->title }}</h2>
-                    <p class="text-sm text-gray-500 mb-2">{{ $property->city ?? '---' }} — {{ $property->neighborhood ?? '' }}</p>
-                    <p class="text-green-700 font-medium mb-3">${{ number_format($property->price, 2) }}</p>
+                    <h2 class="text-lg font-semibold">{{ $property->title }}</h2>
+                    <p class="text-sm text-gray-500">{{ $property->city }}</p>
+                    <p class="text-green-700 font-medium my-2">
+                        ${{ number_format($property->price, 2) }}
+                    </p>
 
                     <div class="flex flex-wrap gap-2 mb-3">
                         @foreach($property->amenities as $a)
-                            <span class="text-xs px-2 py-1 bg-gray-100 rounded-full">{{ $a->name }}</span>
+                            <span class="text-xs px-2 py-1 bg-gray-100 rounded-full">
+                                {{ $a->name }}
+                            </span>
                         @endforeach
                     </div>
 
-                    <div class="flex items-center gap-2 flex-wrap">
+                    <div class="flex gap-2 flex-wrap">
                         <a href="{{ route('dashboard.properties.show', $property->id) }}"
-                           class="px-3 py-1 bg-blue-50 border border-blue-100 rounded-full text-sm text-blue-700 hover:bg-blue-100 transition">View</a>
-                        <a href="{{ route('dashboard.properties.edit', $property->id) }}"
-                           class="px-3 py-1 bg-yellow-50 border border-yellow-100 rounded-full text-sm text-yellow-700 hover:bg-yellow-100 transition">Edit</a>
+                           class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">View</a>
 
-                        <form action="{{ route('dashboard.properties.destroy', $property->id) }}" method="POST"
-                              onsubmit="return confirm('Are you sure you want to delete this property?');" class="inline-block">
+                        <a href="{{ route('dashboard.properties.edit', $property->id) }}"
+                           class="px-3 py-1 bg-yellow-50 text-yellow-700 rounded-full text-sm">Edit</a>
+
+                        {{-- Delete (uses modal) --}}
+                        <form action="{{ route('dashboard.properties.destroy', $property->id) }}"
+                              method="POST"
+                              onsubmit="event.preventDefault();
+                                        window.currentDeleteForm = this;
+                                        window.dispatchEvent(
+                                            new CustomEvent('open-modal', { detail: 'delete-property' })
+                                        );">
                             @csrf
                             @method('DELETE')
                             <button type="submit"
-                                    class="px-3 py-1 bg-red-50 border border-red-100 rounded-full text-sm text-red-600 hover:bg-red-100 transition">
+                                    class="px-3 py-1 bg-red-50 text-red-600 rounded-full text-sm">
                                 Delete
                             </button>
                         </form>
@@ -132,20 +133,36 @@
                 </div>
             </div>
         @empty
-            <div class="col-span-full p-6 text-center text-gray-500">No properties found.</div>
+            <div class="col-span-full text-center text-gray-500 p-6">
+                No properties found.
+            </div>
         @endforelse
     </div>
 
     {{-- Pagination --}}
-    <div class="mt-6 flex items-center justify-between">
-        <div class="text-sm text-indigo-500">
-            Showing <strong>{{ $properties->firstItem() ?? 0 }}</strong> to <strong>{{ $properties->lastItem() ?? 0 }}</strong>
-            of <strong>{{ $properties->total() }}</strong> properties
-        </div>
-
-        <div>
-            {{ $properties->appends(request()->query())->links('pagination::tailwind') }}
-        </div>
+    <div class="mt-6">
+        {{ $properties->appends(request()->query())->links('pagination::tailwind') }}
     </div>
 </div>
+
+{{-- =====================
+     Confirm Delete Modal
+   ===================== --}}
+<x-confirm-modal
+    id="delete-property"
+    title="Delete Property"
+    message="Are you sure you want to delete this property? This action cannot be undone."
+    confirmText="Delete"
+    cancelText="Cancel"
+>
+    <button
+        type="button"
+        @click="if (window.currentDeleteForm) window.currentDeleteForm.submit(); open = false"
+        class="px-5 py-2 rounded-full bg-indigo-600 text-white hover:bg-indigo-700 transition"
+    >
+        Delete
+    </button>
+</x-confirm-modal>
+
+
 @endsection

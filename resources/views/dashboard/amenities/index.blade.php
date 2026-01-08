@@ -41,16 +41,28 @@
                             Edit
                         </a>
 
-                        <form action="{{ route('dashboard.amenities.destroy', $amenity) }}"
-                            method="POST"
-                            onsubmit="return confirm('Are you sure?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                class="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700">
-                                Delete
-                            </button>
-                        </form>
+<form
+    method="POST"
+    action="{{ route('dashboard.amenities.destroy', $amenity) }}"
+    x-data
+    @submit.prevent="
+        window.currentAmenityDeleteForm = $el;
+        window.dispatchEvent(
+            new CustomEvent('open-modal', { detail: 'delete-amenity' })
+        );
+    "
+>
+    @csrf
+    @method('DELETE')
+
+    <button
+        type="submit"
+        class="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700"
+    >
+        Delete
+    </button>
+</form>
+
                     </div>
                 </td>
             </tr>
@@ -64,4 +76,24 @@
         </tbody>
     </table>
 </div>
+<x-confirm-modal
+    id="delete-amenity"
+    title="Delete Amenity"
+    message="Are you sure you want to delete this amenity? This action cannot be undone."
+    confirmText="Delete"
+    cancelText="Cancel"
+>
+    <button
+        type="button"
+        class="px-5 py-2 rounded-full bg-indigo-600 text-white hover:bg-indigo-700 transition"
+        @click="
+            if (window.currentAmenityDeleteForm) {
+                window.currentAmenityDeleteForm.submit();
+            }
+        "
+    >
+        Delete
+    </button>
+</x-confirm-modal>
+
 @endsection

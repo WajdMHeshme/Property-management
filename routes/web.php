@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\PropertyImageController;
 use App\Http\Controllers\Admin\DashboardController;
 
 
+use App\Http\Controllers\Admin\Reports\BookingsReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,6 +80,13 @@ Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
         Route::view('reports/bookings', 'dashboard.reports.bookings')
             ->name('reports.bookings');
 
+        
+Route::get('reports/bookings', [BookingsReportController::class, 'index'])
+    ->name('reports.bookings');
+            
+    // Create employee
+    Route::post('/employees', [AdminController::class, 'store'])
+        ->name(name: 'admin.employees.store');
 
         // Create employee
         Route::post('/employees', [AdminController::class, 'store'])

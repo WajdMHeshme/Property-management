@@ -6,6 +6,9 @@ use App\Http\Controllers\Admin\AmenityController;
 use App\Http\Controllers\Admin\PropertyController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\PropertyImageController;
+use App\Http\Controllers\Admin\DashboardController;
+
+
 use App\Http\Controllers\Admin\Reports\BookingsReportController;
 
 /*
@@ -34,9 +37,13 @@ Route::middleware(['auth', 'checkRole:admin'])
         /*
         | Dashboard Home
         */
-        Route::get('/', function () {
-            return view('dashboard.index');
-        })->name('index');
+
+
+
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
+
+
+
 
         /*
         | Amenities CRUD
@@ -70,6 +77,9 @@ Route::middleware(['auth', 'checkRole:admin'])
         Route::view('reports/properties', 'dashboard.reports.properties')
             ->name('reports.properties');
 
+        Route::view('reports/bookings', 'dashboard.reports.bookings')
+            ->name('reports.bookings');
+
         
 Route::get('reports/bookings', [BookingsReportController::class, 'index'])
     ->name('reports.bookings');
@@ -78,21 +88,24 @@ Route::get('reports/bookings', [BookingsReportController::class, 'index'])
     Route::post('/employees', [AdminController::class, 'store'])
         ->name(name: 'admin.employees.store');
 
-    // Change user role
-    Route::patch('/users/{id}/role', [AdminController::class, 'changeRole'])
-        ->name('admin.users.change-role');
+        // Create employee
+        Route::post('/employees', [AdminController::class, 'store'])
+            ->name(name: 'admin.employees.store');
 
-    // Activate / Deactivate user
-    Route::patch('/users/{userId}/status', [AdminController::class, 'toggleUserStatus'])
-        ->name('admin.users.toggle-status');
+        // Change user role
+        Route::patch('/users/{id}/role', [AdminController::class, 'changeRole'])
+            ->name('admin.users.change-role');
 
-    // Change admin password
-    Route::patch('/change-password', [AdminController::class, 'changePassword'])
-        ->name('admin.change-password');
-     
-    // add employee
-    Route::post('/add-employee', [AdminController::class, 'store']);
+        // Activate / Deactivate user
+        Route::patch('/users/{userId}/status', [AdminController::class, 'toggleUserStatus'])
+            ->name('admin.users.toggle-status');
 
+        // Change admin password
+        Route::patch('/change-password', [AdminController::class, 'changePassword'])
+            ->name('admin.change-password');
+
+        // add employee
+        Route::post('/add-employee', [AdminController::class, 'store']);
     });
 
 /*
@@ -112,6 +125,6 @@ Route::middleware('auth')->group(function () {
         ->name('profile.destroy');
 });
 
-   
+
 require __DIR__ . '/auth.php';
 require __DIR__ . '/employee.php';

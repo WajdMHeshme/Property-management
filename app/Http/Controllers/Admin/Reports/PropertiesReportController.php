@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Reports;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Property;
+use Barryvdh\DomPDF\Facade\PDF;
 
 class PropertiesReportController extends Controller
 {
@@ -14,7 +15,23 @@ class PropertiesReportController extends Controller
 
     public function index(Request $request)
     {
-        // Validation
+        
+    $report = $this->getReportData($request);
+    return view('dashboard.reports.properties', compact('report'));
+    }
+
+    public function export(Request $request){
+    $report = $this->getReportData($request);
+
+    $pdf = PDF::loadView('dashboard.reports.properties-export', compact('report'));
+
+    $fileName = 'properties_report_' . now()->format('Y-m-d_H-i-s') . '.pdf';
+    return $pdf->download($fileName);
+
+    }
+
+    public function getReportData(Request $request){
+          // Validation
         $filters = $request->validate([
             'status' => 'nullable|in:available,booked,rented,hidden',
             'city'   => 'nullable|string',
@@ -39,7 +56,7 @@ class PropertiesReportController extends Controller
             ]);
         }
 
-        $report = [
+        return [
             'total_properties' => $query->count(),
 
             'by_status' => [
@@ -52,6 +69,7 @@ class PropertiesReportController extends Controller
             'properties' => $query->latest()->get(),
         ];
 
-        return view('dashboard.reports.properties', compact('report'));
+      
+
     }
 }

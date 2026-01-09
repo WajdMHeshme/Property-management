@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Admin\Reports;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+
+use Barryvdh\DomPDF\Facade\PDF;
+
 
 
 class BookingsReportController extends Controller
@@ -19,9 +19,14 @@ class BookingsReportController extends Controller
 
 public function index()
 {
+        $stats = $this->getStats();
+        return view('dashboard.reports.bookings', compact('stats'));
+}
 
-
-        $stats = [
+  
+public function getStats(){
+        
+        return  [
 
             // BASIC COUNTS 
             'total'      => Booking::count(),
@@ -61,6 +66,20 @@ public function index()
                 ->get(),
         ];
 
-        return view('dashboard.reports.bookings', compact('stats' ));
     }
+    public function export()
+    {
+        $stats = $this->getStats();
+            
+            $pdf = PDF::loadView('dashboard.reports.bookings-export', compact('stats'));
+
+          $fileName = 'bookings_report_' . now()->format('Y-m-d_H-i-s') . '.pdf';
+
+        return $pdf->download($fileName);
+
+ 
+
+    }
+
+
 }

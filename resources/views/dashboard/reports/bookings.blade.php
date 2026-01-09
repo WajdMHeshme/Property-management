@@ -4,12 +4,27 @@
 
 <div class="lg:ml-50 px-6 py-8" style="direction:ltr">
 
-    {{-- Page Title --}}
-    <div class="mb-6">
-        <h1 class="text-xl font-semibold text-gray-900">
+    {{-- Page Title + Actions --}}
+<div class="mb-6 flex items-center justify-between">
+    <div>
+        <h1 class="text-xl font-bold text-gray-900 pb-2">
             Bookings Report
         </h1>
+        <p class="text-xs text-gray-500">
+            Generated at: {{ now()->format('Y-m-d H:i') }}
+        </p>
     </div>
+
+    {{-- Export Button --}}
+    <a href="{{ route('dashboard.reports.bookings.export') }}"
+       class="px-4 py-2 rounded-xl text-sm font-medium
+              bg-indigo-600 text-white
+              hover:bg-indigo-700 transition">
+        Export Report
+    </a>
+</div>
+
+
 
 
 

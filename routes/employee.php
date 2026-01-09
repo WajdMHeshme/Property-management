@@ -18,11 +18,6 @@ Route::middleware(['auth', 'role:admin|employee'])
         Route::get('/bookings', [EmployeeBookingController::class, 'index'])
             ->name('bookings.index');
 
-Route::middleware(['auth', 'role:admin'])
-    ->get('/dashboard', [DashboardController::class, 'index'])
-    ->name('dashboard.index');
-
-
 
 
 

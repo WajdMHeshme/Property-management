@@ -38,18 +38,19 @@ Route::get('/', function () {
 | Name prefix: dashboard.*
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'check.active', 'role:admin'])
-    ->prefix('dashboard')
+Route::middleware(['auth', 'check.active'])
+    ->prefix('/dashboard')
     ->name('dashboard.')
     ->group(function () {
 
-        /*
-        |--------------------------------------------------------------------------
-        | Dashboard Home
-        |--------------------------------------------------------------------------
-        */
-        Route::get('/', [DashboardController::class, 'index'])
-            ->name('index');
+
+        // Home dashboard
+Route::get('/', [DashboardController::class, 'index'])
+    ->name('index');
+    
+   
+ Route::middleware(['auth', 'check.active'])->get('/', [DashboardController::class, 'index'])->name('dashboard');
+
 
         /*
         |--------------------------------------------------------------------------

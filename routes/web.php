@@ -29,8 +29,8 @@ Route::get('/', function () {
 | Route name prefix: dashboard.*
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'check.active', 'role:admin'])
-    ->prefix('dashboard')
+Route::middleware(['auth', 'check.active'])
+    ->prefix('/dashboard')
     ->name('dashboard.')
     ->group(function () {
 
@@ -38,6 +38,9 @@ Route::middleware(['auth', 'check.active', 'role:admin'])
         // Home dashboard
 Route::get('/', [DashboardController::class, 'index'])
     ->name('index');
+    
+   
+ Route::middleware(['auth', 'check.active'])->get('/', [DashboardController::class, 'index'])->name('dashboard');
 
 
         /*

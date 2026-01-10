@@ -18,12 +18,6 @@ Route::middleware(['auth', 'role:admin|employee'])
         Route::get('/bookings', [EmployeeBookingController::class, 'index'])
             ->name('bookings.index');
 
-// Home dashboard
-Route::get('/', function () {
-    return view('dashboard.index');
-})->name('index');
-
-
 
 
 

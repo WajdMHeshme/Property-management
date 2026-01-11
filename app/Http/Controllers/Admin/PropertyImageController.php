@@ -22,8 +22,11 @@ class PropertyImageController extends Controller
     }
 
     // Upload Property Images (Admin Blade)
-    public function store(StorePropertyImagesRequest $request, Property $property, ImageService $imageService)
-    {
+    public function store(
+        StorePropertyImagesRequest $request,
+        Property $property,
+        ImageService $imageService
+    ) {
         $imageService->upload(
             $property,
             $request->file('images'),
@@ -36,23 +39,37 @@ class PropertyImageController extends Controller
     }
 
     // Set as Main Image
-    public function setMain(Request $request, Property $property, PropertyImage $image, ImageService $imageService)
-    {
+    public function setMain(
+        Request $request,
+        Property $property,
+        PropertyImage $image,
+
+        ImageService $imageService
+    ) {
         $imageService->setMain($property, $image);
+
         return back()->with('success', 'Main image has been set successfully');
     }
 
     // Soft Delete
-    public function destroy(Property $property, PropertyImage $image, ImageService $imageService)
-    {
+    public function destroy(
+        Property $property,
+        PropertyImage $image,
+        ImageService $imageService
+    ) {
         $imageService->softDelete($property, $image);
+
         return back()->with('success', 'Image has been soft deleted successfully');
     }
 
     // Permanent Delete
-    public function forceDestroy(Property $property, PropertyImage $image, ImageService $imageService)
-    {
+    public function forceDestroy(
+        Property $property,
+        PropertyImage $image,
+        ImageService $imageService
+    ) {
         $imageService->forceDelete($property, $image);
+
         return back()->with('success', 'Image has been permanently deleted');
     }
 
@@ -64,12 +81,18 @@ class PropertyImageController extends Controller
             ->latest()
             ->get();
 
-        return view('dashboard.properties.images_trashed', compact('property', 'trashedImages'));
+        return view(
+            'dashboard.properties.images_trashed',
+            compact('property', 'trashedImages')
+        );
     }
 
     // Restore soft deleted image
-    public function restore(Property $property, $image, ImageService $imageService)
-    {
+    public function restore(
+        Property $property,
+        $image,
+        ImageService $imageService
+    ) {
         $img = PropertyImage::withTrashed()
             ->where('property_id', $property->id)
             ->findOrFail($image);

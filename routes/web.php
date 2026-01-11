@@ -77,11 +77,29 @@ Route::get('/', [DashboardController::class, 'index'])
 
         /*
         |--------------------------------------------------------------------------
-        | Property Images
+        | Property Images (Admin)
         |--------------------------------------------------------------------------
         */
+        Route::get('properties/{property}/images', [PropertyImageController::class, 'index'])
+            ->name('properties.images.index');
+
         Route::post('properties/{property}/images', [PropertyImageController::class, 'store'])
             ->name('properties.images.store');
+
+        Route::patch('properties/{property}/images/{image}/main', [PropertyImageController::class, 'setMain'])
+            ->name('properties.images.setMain');
+
+        Route::delete('properties/{property}/images/{image}', [PropertyImageController::class, 'destroy'])
+            ->name('properties.images.destroy');
+
+        Route::delete('properties/{property}/images/{image}/force', [PropertyImageController::class, 'forceDestroy'])
+            ->name('properties.images.forceDestroy');
+
+        Route::get('properties/{property}/images/trashed', [PropertyImageController::class, 'trashed'])
+            ->name('properties.images.trashed');
+
+        Route::patch('properties/{property}/images/{image}/restore', [PropertyImageController::class, 'restore'])
+            ->name('properties.images.restore');
 
         /*
         |--------------------------------------------------------------------------
@@ -110,39 +128,30 @@ Route::get('/', [DashboardController::class, 'index'])
 
         /*
         |--------------------------------------------------------------------------
-        | Users & Employees Management (AdminController)
+        | Users & Employees Management
         |--------------------------------------------------------------------------
         */
-
-        // List all users
         Route::get('users', [AdminController::class, 'index'])
             ->name('admin.employees.index');
 
-        // Show create employee page
         Route::get('employees/create', [AdminController::class, 'create'])
             ->name('admin.employees.create');
 
-        // Store new employee
         Route::post('employees', [AdminController::class, 'store'])
             ->name('admin.employees.store');
 
-        // Show edit role page
         Route::get('users/{id}/role', [AdminController::class, 'editRole'])
             ->name('admin.users.edit-role');
 
-        // Update user role
         Route::patch('users/{id}/role', [AdminController::class, 'changeRole'])
             ->name('admin.users.change-role');
 
-        // Show account status page
         Route::get('users/{userId}/status', [AdminController::class, 'editAccount'])
             ->name('admin.users.edit-status');
 
-        // Toggle user active / inactive
         Route::patch('users/{userId}/status', [AdminController::class, 'toggleUserStatus'])
             ->name('admin.users.toggle-status');
 
-        // Delete a user
         Route::delete('users/{userId}', [AdminController::class, 'destroy'])
             ->name('admin.users.destroy');
 
@@ -153,7 +162,6 @@ Route::get('/', [DashboardController::class, 'index'])
         */
         Route::patch('change-password', [AdminController::class, 'changePassword'])
             ->name('admin.change-password');
-    });
 
 /*
 |--------------------------------------------------------------------------

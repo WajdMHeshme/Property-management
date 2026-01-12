@@ -59,21 +59,39 @@
             </a>
         </div>
 
-        {{-- Amenities --}}
-        <div class="md:col-span-4">
+        {{-- Two dropdowns side-by-side: Amenities & Property Types --}}
+        <div class="md:col-span-2">
             <label class="block mb-2 text-sm font-medium text-gray-700">Amenities</label>
-            <div class="flex flex-wrap gap-2">
+
+            <select name="amenity_ids[]"
+                    multiple
+                    class="w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 h-40 p-2">
                 @foreach($amenities as $amenity)
-                    <label class="inline-flex items-center bg-gray-100 rounded-full px-3 py-1 cursor-pointer hover:bg-indigo-50 transition">
-                        <input type="checkbox"
-                               name="amenity_ids[]"
-                               value="{{ $amenity->id }}"
-                               {{ in_array($amenity->id, (array)($filters['amenity_ids'] ?? [])) ? 'checked' : '' }}
-                               class="form-checkbox h-4 w-4 text-indigo-600 rounded">
-                        <span class="ml-2 text-sm text-gray-700">{{ $amenity->name }}</span>
-                    </label>
+                    <option value="{{ $amenity->id }}"
+                        {{ in_array($amenity->id, (array)($filters['amenity_ids'] ?? [])) ? 'selected' : '' }}>
+                        {{ $amenity->name }}
+                    </option>
                 @endforeach
-            </div>
+            </select>
+
+            <p class="text-xs text-gray-500 mt-1">Hold Ctrl (or Cmd) to select multiple</p>
+        </div>
+
+        <div class="md:col-span-2">
+            <label class="block mb-2 text-sm font-medium text-gray-700">Property Types</label>
+
+            <select name="property_types[]"
+                    multiple
+                    class="w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 h-40 p-2">
+                @foreach($propertyTypes as $type)
+                    <option value="{{ $type->id }}"
+                        {{ in_array($type->id, (array)($filters['property_types'] ?? [])) ? 'selected' : '' }}>
+                        {{ $type->name }}
+                    </option>
+                @endforeach
+            </select>
+
+            <p class="text-xs text-gray-500 mt-1">Hold Ctrl (or Cmd) to select multiple</p>
         </div>
     </form>
 
@@ -93,8 +111,17 @@
                 </div>
 
                 <div class="p-4">
-                    <h2 class="text-lg font-semibold">{{ $property->title }}</h2>
+                    <div class="flex items-center justify-between mb-1">
+                        <h2 class="text-lg font-semibold">{{ $property->title }}</h2>
+                        @if($property->propertyType)
+                            <span class="text-xs px-2 py-1 bg-indigo-100 text-indigo-700 rounded-full">
+                                {{ $property->propertyType->name }}
+                            </span>
+                        @endif
+                    </div>
+
                     <p class="text-sm text-gray-500">{{ $property->city }}</p>
+
                     <p class="text-green-700 font-medium my-2">
                         ${{ number_format($property->price, 2) }}
                     </p>
@@ -114,7 +141,6 @@
                         <a href="{{ route('dashboard.properties.edit', $property->id) }}"
                            class="px-3 py-1 bg-yellow-50 text-yellow-700 rounded-full text-sm">Edit</a>
 
-                        {{-- Delete (uses modal) --}}
                         <form action="{{ route('dashboard.properties.destroy', $property->id) }}"
                               method="POST"
                               onsubmit="event.preventDefault();
@@ -145,9 +171,6 @@
     </div>
 </div>
 
-{{-- =====================
-     Confirm Delete Modal
-   ===================== --}}
 <x-confirm-modal
     id="delete-property"
     title="Delete Property"
@@ -163,6 +186,4 @@
         Delete
     </button>
 </x-confirm-modal>
-
-
 @endsection

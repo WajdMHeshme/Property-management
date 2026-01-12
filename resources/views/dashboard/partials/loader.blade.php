@@ -1,7 +1,7 @@
 <style>
 /* --- Loader Container --- */
 #loader-root {
-  background: linear-gradient(135deg, #5b21b6, #7c3aed); /* بنفسجي متدرج */
+  background: linear-gradient(135deg, #5b21b6, #7c3aed);
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -21,26 +21,25 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* --- Outline Text (خفيف للعمق) --- */
+/*  Outline Text  */
 .loader .outline {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   color: transparent;
-  -webkit-text-stroke: 2px rgba(255,255,255,0.5); /* أبيض نصف شفاف */
+  -webkit-text-stroke: 2px rgba(255,255,255,0.5);
   font-size: 120px;
   letter-spacing: 6px;
   font-weight: 800;
 }
 
-/* --- Fill Text مع تأثير نبض --- */
 .loader .fill {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #ffffff; /* أبيض */
+  color: #ffffff;
   -webkit-text-stroke: 0px;
   font-size: 120px;
   letter-spacing: 6px;
@@ -48,7 +47,6 @@
   animation: pulseText 1.8s ease-in-out infinite, waveClip 2s ease-in-out infinite;
 }
 
-/* --- نبض النص --- */
 @keyframes pulseText {
   0%, 100% {
     transform: translate(-50%, -50%) scale(1);
@@ -60,7 +58,6 @@
   }
 }
 
-/* --- حركة wave للنص --- */
 @keyframes waveClip {
   0%, 100% {
     clip-path: polygon(

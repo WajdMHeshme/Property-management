@@ -6,6 +6,7 @@
 @section('content')
 
 
+
 {{-- Outer: full viewport, no vertical scroll --}}
 <div class="h-screen overflow-hidden flex flex-col p-6">
 

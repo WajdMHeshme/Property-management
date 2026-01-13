@@ -32,20 +32,6 @@ class PropertyController extends Controller
         return PropertyResource::collection($properties);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     * POST /admin/properties
-     */
-    public function store(StorePropertyRequest $request)
-    {
-        $property = $this->propertyService->create(
-            $request->validated()
-        );
-
-        return new PropertyResource(
-            $property->load(['propertyType', 'mainImage', 'amenities'])
-        );
-    }
 
     /**
      * Display the specified resource.
@@ -58,32 +44,4 @@ class PropertyController extends Controller
         );
     }
 
-    /**
-     * Update the specified resource in storage.
-     * PUT /admin/properties/{property}
-     */
-    public function update(UpdatePropertyRequest $request, Property $property)
-    {
-        $property = $this->propertyService->update(
-            $property,
-            $request->validated()
-        );
-
-        return new PropertyResource(
-            $property->load(['propertyType', 'mainImage', 'amenities'])
-        );
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     * DELETE /admin/properties/{property}
-     */
-    public function destroy(Property $property)
-    {
-        $this->propertyService->delete($property);
-
-        return response()->json([
-            'message' => 'Property deleted successfully'
-        ]);
-    }
 }

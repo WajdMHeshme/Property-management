@@ -47,8 +47,8 @@ Route::middleware(['auth', 'check.active'])
         // Home dashboard
 Route::get('/', [DashboardController::class, 'index'])
     ->name('index');
-    
-   
+
+
  Route::middleware(['auth', 'check.active'])->get('/', [DashboardController::class, 'index'])->name('dashboard');
 
 

@@ -28,11 +28,11 @@
                 <button id="userToggle" aria-haspopup="true" aria-expanded="false"
                         class="flex items-center gap-3 p-2 rounded-full hover:bg-indigo-50 transition focus:outline-none">
                     <div class="h-10 w-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 font-semibold">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        {{ strtoupper(substr(auth()->user()?->name ?? 'G', 0, 1)) }}
                     </div>
 
                     <div class="hidden sm:flex flex-col text-right">
-                        <span class="text-sm font-medium text-gray-700">{{ auth()->user()->name }}</span>
+                        <span class="text-sm font-medium text-gray-700">{{ auth()->user()?->name ?? 'Guest' }}</span>
                     </div>
 
                     <svg id="userCaret" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -49,8 +49,8 @@
                                 <span class="px-2 py-0.5 text-xs rounded-full bg-indigo-50 text-indigo-700 font-medium">Employee</span>
                             @endrole
                         </div>
-                        <p class="text-sm font-medium text-gray-800">{{ auth()->user()->name }}</p>
-                        <p class="text-xs text-gray-500">{{ auth()->user()->email }}</p>
+                        <p class="text-sm font-medium text-gray-800">{{ auth()->user()?->name ?? 'Guest' }}</p>
+                        <p class="text-xs text-gray-500">{{ auth()->user()?->email ?? 'guest@example.com' }}</p>
                     </div>
 
                     <div class="border-t border-gray-100"></div>

@@ -4,12 +4,12 @@
 A comprehensive Laravel-based platform for managing property listings, bookings, and user interactions with three distinct system roles (Admin, Employee, Client).
 
 ## 📸 Screenshots
-![Admin Dashboard](/screenshots/Hoom.png)
-![Property Listing](/screenshots/properties.png)
-![Booking Management](/screenshots/amenities.png)
-![Booking Management](/screenshots/bookings.png)
-![Booking Report Management](/screenshots/bookings%20repoert.png)
-![Property Report Management](/screenshots/properties%20repoert.png)
+![Admin Dashboard](./screenshots/Hoom.png)
+![Property Listing](./screenshots/properties.png)
+![Amenities](./screenshots/amenities.png)
+![Booking Management](./screenshots/bookings.png)
+![Booking Report Management](./screenshots/bookings%20repoert.png)
+![Property Report Management](./screenshots/properties%20repoert.png)
 
 ## 📚 Table of Contents
 - [🚀 Project Overview](#-project-overview)

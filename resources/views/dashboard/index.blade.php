@@ -4,7 +4,7 @@
 @section('page_title', 'Dashboard')
 
 @section('content')
-
+@hasrole('admin')
 
 
 {{-- Outer: full viewport, no vertical scroll --}}
@@ -298,5 +298,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 </script>
-
+@endhasrole
 @endsection

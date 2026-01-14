@@ -77,8 +77,8 @@ public function create(): View
         $property = $this->propertyService->create($data);
 
         if ($request->hasFile('images')) {
-            app(\App\Services\ImageService::class)->uploadPropertyImages(
-                $property->id,
+            app(\App\Services\ImageService::class)->upload(
+                $property,
                 $request->file('images'),
                 null
             );

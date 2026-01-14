@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\PropertyController;
 use App\Http\Controllers\Admin\PropertyImageController;
+use App\Http\Controllers\Customer\ReviewController;
+use App\Http\Controllers\Visitor\PropertyController as VisitorPropertyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,8 +36,9 @@ Route::middleware(['auth:sanctum', 'check.active'])->group(function () {
 
 // Public Property endpoints (visitor – no auth)
 
-    Route::get('/properties', [PropertyController::class, 'index']);
-    Route::get('/properties/{property}', [PropertyController::class, 'show']);
+    Route::get('/properties', [VisitorPropertyController::class, 'index']);
+    Route::get('/properties/{property}', [VisitorPropertyController::class, 'show']);
+
 
 
 /*
@@ -52,7 +55,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+
+            // Add a new review / rating
+    Route::post('/reviews', [ReviewController::class, 'store']);
     });
+
 
 
 require __DIR__ . '/customer.php';

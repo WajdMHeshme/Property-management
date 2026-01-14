@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleSeeder::class,
             UserSeeder::class,
+            PropertyTypeSeeder::class,
             PropertySeeder::class,
             BookingSeeder::class,
         ]);

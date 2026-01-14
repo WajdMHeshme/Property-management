@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\PropertyImageController;
 use App\Http\Controllers\Admin\Reports\BookingsReportController;
 use App\Http\Controllers\Admin\Reports\PropertiesReportController;
 
+
 /*
 |--------------------------------------------------------------------------
 | Public Routes
@@ -30,6 +31,11 @@ use App\Http\Controllers\Admin\Reports\PropertiesReportController;
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+Route::view('/team', 'team')
+    ->name('team.index');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -47,10 +53,9 @@ Route::middleware(['auth', 'check.active','role:admin|employee'])
         // Home dashboard
 Route::get('/', [DashboardController::class, 'index'])
     ->name('index');
-    
-   
- Route::middleware(['auth', 'check.active'])->get('/', [DashboardController::class, 'index'])->name('dashboard');
 
+
+ Route::middleware(['auth', 'check.active'])->get('/', [DashboardController::class, 'index'])->name('dashboard');
 
         /*
         |--------------------------------------------------------------------------

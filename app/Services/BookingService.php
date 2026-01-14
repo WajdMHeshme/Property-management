@@ -2,46 +2,42 @@
 namespace App\Services;
 
 use App\Models\Booking;
+use App\Models\Property;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class BookingService
 {
     /**
-     * transcation => all or nothing 
+     * transcation => all or nothing
      */
-    public function create(array $data)
+    public function create(array $data): Booking
     {
-        return DB::transaction(function () use ($data) {
+        // Check if the property exists before using it
+        $property = Property::find($data['property_id'] ?? null);
+        if (!$property) {
+            throw new \Exception('Property not found');
+        }
 
-            // prevent same property + same time booking
-            $exists = Booking::where('property_id', $data['property_id'])
-                ->where('scheduled_at', $data['scheduled_at'])
-                ->lockForUpdate()
-                ->exists();
+        // Ensure the user is authenticated
+        $userId = auth('sanctum')->id();
+        if (!$userId) {
+            throw new \Exception('Unauthenticated');
+        }
 
-            if ($exists) {
-                throw new \Exception('This appointment is already booked for this property');
-            }
+        // Create the booking inside a transaction
+        return DB::transaction(function () use ($data, $userId, $property) {
 
-            // auto assign employee (if available)
-            $employee = User::role('employee')
-                ->whereDoesntHave('assignedBookings', function ($q) use ($data) {
-                    $q->where('scheduled_at', $data['scheduled_at'])
-                      ->whereIn('status', ['pending','approved']);
-                })
-                ->withCount('assignedBookings')
-                ->orderBy('assigned_bookings_count')
-                ->first();
-
-            return Booking::create([
-                'user_id'      => auth('sanctum')->id(), 
-                'property_id'  => $data['property_id'],
+            $booking = Booking::create([
+                'property_id'  => $property->id,
+                'user_id'      => $userId,
                 'scheduled_at' => $data['scheduled_at'],
                 'status'       => 'pending',
-                'employee_id'  => $employee?->id,
-                'notes'        => $data['notes'] ?? null,
+                // Keep other fields from $data if needed
             ]);
+
+            // Load property and employee relationships before returning
+            return $booking->load(['property', 'employee']);
         });
     }
      public function show(Booking $booking)
@@ -56,7 +52,7 @@ class BookingService
     public function cancel(Booking $booking)
     {
         $booking->update([
-            'status' => 'cancelled',
+            'status' => 'canceled',
         ]);
 
         return $booking;

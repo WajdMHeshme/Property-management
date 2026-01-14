@@ -21,36 +21,39 @@ class BookingResource extends JsonResource
             'scheduled_at' => $this->scheduled_at?->format('Y-m-d H:i'),
             'notes' =>$this->notes,
 
-            'property'=>[
-                'id' =>$this->property->id,
-                'title'=>$this->property->title,
-                'city' =>$this->property->city,
-            ],
-            'customer' =>[
-                'id' =>$this->customer->id,
-                'name' =>$this->customer->name,
-                'email' =>$this->customer->email,
-            ],
+            'property' => $this->property ? [
+                'id'    => $this->property->id,
+                'title' => $this->property->title,
+                'city'  => $this->property->city,
+            ] : null,
+
+            'customer' => $this->customer ? [
+                'id'    => $this->customer->id,
+                'name'  => $this->customer->name,
+                'email' => $this->customer->email,
+            ] : null,
+
             'employee' => $this->employee
-          ?[
-        'id'   => $this->employee->id,
-        'name' => $this->employee->name,
-         ]
-    : null,
+                ? [
+                    'id'   => $this->employee->id,
+                    'name' => $this->employee->name,
+                ]
+                : null,
         ];
     }
+
     /**
-     * use meta data in dashbord 
+     * use meta data in dashbord
      * @param mixed $request
      * @return array{meta: array{created_at: mixed, updated_at: mixed}}
      */
     public function with($request)
     {
         return [
-            'meta' =>[
+            'meta' => [
                 'created_at' =>$this->created_at?->diffForHumans(),
                 'updated_at' =>$this->updated_at?->diffForHumans(),
             ]
-            ];
+        ];
     }
 }

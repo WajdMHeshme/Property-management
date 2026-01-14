@@ -27,6 +27,21 @@
                        placeholder="Property Title" required>
             </div>
 
+            <!-- Property Type -->
+            <div>
+                <label class="block mb-2 font-medium text-gray-700">Property Type</label>
+                <select name="property_type_id"
+                        class="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-indigo-400 focus:outline-none shadow-sm">
+                    <option value="">-- Select Type --</option>
+                    @foreach($propertyTypes as $type)
+                        <option value="{{ $type->id }}"
+                            {{ old('property_type_id', $property->property_type_id) == $type->id ? 'selected' : '' }}>
+                            {{ $type->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
             <!-- City & Neighborhood -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>

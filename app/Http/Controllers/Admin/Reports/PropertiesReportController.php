@@ -30,46 +30,44 @@ class PropertiesReportController extends Controller
 
     }
 
-    public function getReportData(Request $request){
-          // Validation
-        $filters = $request->validate([
-            'status' => 'nullable|in:available,booked,rented,hidden',
-            'city'   => 'nullable|string',
-            'from'   => 'nullable|date',
-            'to'     => 'nullable|date',
-        ]);
+    public function getReportData(Request $request)
+{
+    // Validation
+    $filters = $request->validate([
+        'status' => 'nullable|in:available,booked,rented,hidden',
+        'city'   => 'nullable|string',
+        'from'   => 'nullable|date',
+        'to'     => 'nullable|date',
+    ]);
 
-        $query = Property::query();
+    $query = Property::query()
+        ->when($filters['status'] ?? null, function ($q, $status) {
+            $q->where('status', $status);
+        })
+        ->when($filters['city'] ?? null, function ($q, $city) {
+            $q->where('city', $city);
+        })
+        ->when(
+            !empty($filters['from']) && !empty($filters['to']),
+            function ($q) use ($filters) {
+                $q->whereBetween('created_at', [
+                    $filters['from'],
+                    $filters['to']
+                ]);
+            }
+        );
 
-        if (!empty($filters['status'])) {
-            $query->where('status', $filters['status']);
-        }
+    return [
+        'total_properties' => $query->count(),
 
-        if (!empty($filters['city'])) {
-            $query->where('city', $filters['city']);
-        }
+        'by_status' => [
+            'available' => Property::where('status', 'available')->count(),
+            'booked'    => Property::where('status', 'booked')->count(),
+            'rented'    => Property::where('status', 'rented')->count(),
+            'hidden'    => Property::where('status', 'hidden')->count(),
+        ],
 
-        if (!empty($filters['from']) && !empty($filters['to'])) {
-            $query->whereBetween('created_at', [
-                $filters['from'],
-                $filters['to']
-            ]);
-        }
-
-        return [
-            'total_properties' => $query->count(),
-
-            'by_status' => [
-                'available' => Property::where('status', 'available')->count(),
-                'booked'    => Property::where('status', 'booked')->count(),
-                'rented'    => Property::where('status', 'rented')->count(),
-                'hidden'    => Property::where('status', 'hidden')->count(),
-            ],
-
-            'properties' => $query->latest()->get(),
-        ];
-
-      
-
-    }
+        'properties' => $query->latest()->get(),
+    ];
+}
 }

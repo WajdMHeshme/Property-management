@@ -21,7 +21,7 @@ use App\Http\Controllers\Visitor\PropertyController as VisitorPropertyController
 // Auth (public)
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 
 Route::middleware(['auth:sanctum', 'check.active'])->group(function () {

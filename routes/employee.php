@@ -16,7 +16,7 @@ Route::middleware(['auth', 'role:admin|employee'])
    Route::get('/dashboard', [EmployeeDashboardController::class, 'index'])
             ->name('dashboard.employee');
 
-            
+
         // My Bookings
       Route::get('/bookings/my', [EmployeeBookingController::class, 'myBookings'])
     ->name('bookings.my');

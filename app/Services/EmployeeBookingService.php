@@ -17,7 +17,7 @@ class EmployeeBookingService
 
     public function approve(Booking $booking)
     {
-        
+
         if (!in_array($booking->status, ['pending', 'rescheduled'])) {
             abort(422, 'Action not allowed. Booking must be pending or rescheduled.');
         }

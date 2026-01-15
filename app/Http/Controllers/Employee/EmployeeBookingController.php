@@ -25,7 +25,7 @@ class EmployeeBookingController extends Controller
     public function index(Request $request)
     {
         $this->authorize('viewAny', Booking::class);
-        
+
         $user   = $request->user();
         $status = $request->get('status');
 

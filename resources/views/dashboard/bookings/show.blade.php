@@ -181,10 +181,10 @@
 
         {{-- Actions --}}
         <div class="mt-6 flex flex-wrap items-center gap-2">
-            <a href="{{ route('employee.bookings.my') }}"
-                class="px-3 py-1.5 text-xs rounded-lg border hover:bg-gray-100 transition">
-                Back to list
-            </a>
+   <a href="{{ auth()->user()->hasRole('admin') ? route('employee.bookings.index') : route('employee.bookings.my') }}"
+   class="px-3 py-1.5 text-xs rounded-lg border hover:bg-gray-100 transition">
+   ← Back to list
+</a>
 
             @php
             $isOwner = $booking->employee_id === auth()->id();

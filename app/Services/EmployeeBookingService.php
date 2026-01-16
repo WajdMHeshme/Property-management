@@ -46,9 +46,8 @@ class EmployeeBookingService
     public function cancel(Booking $booking)
     {
         if (! in_array($booking->status, ['pending', 'approved','rescheduled'])) {
-            throw ValidationException::withMessages([
-                'status' => 'Action not allowed'
-            ]);
+            throw new \Exception('Action not allowed');
+
         }
 
         $booking->update([
@@ -65,9 +64,8 @@ class EmployeeBookingService
             $scheduleAt,
             $booking->id
         )) {
-            throw ValidationException::withMessages([
-                'scheduled_at' => 'Employee already has booking at this time'
-            ]);
+            throw new \Exception('Employee already has booking at this time');
+
         }
 
         if (! in_array($booking->status, ['pending', 'approved', 'rescheduled'])) {

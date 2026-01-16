@@ -17,17 +17,21 @@ Route::middleware(['auth', 'role:admin|employee'])
             ->name('dashboard.employee');
 
             
-                //Bookings List
+                //Bookings List employee
+        Route::get('/my-own-bookings', [EmployeeBookingController::class, 'myBookings'])
+            ->name('bookings.my');
+     
+
+                    //Bookings List admin
         Route::get('/bookings', [EmployeeBookingController::class, 'index'])
             ->name('bookings.index');
-        // My Bookings
-      Route::get('/bookings/my', [EmployeeBookingController::class, 'myBookings'])
-    ->name('bookings.my');
-
-
-        // Pending Bookings
+              // Pending Bookings
         Route::get('/bookings/pending', [EmployeeBookingController::class, 'pending'])
             ->name('bookings.pending');
+
+            Route::get('/bookings/{booking}', [EmployeeBookingController::class, 'show'])->name('bookings.show');
+     
+      
 
     
 

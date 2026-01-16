@@ -59,7 +59,11 @@
                         <a href="{{ url('dashboard/properties') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Properties</a>
                     @endrole
 
-                    <a href="{{ url('dashboard/bookings') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Bookings</a>
+@role('admin')
+    <a href="{{ url('dashboard/bookings') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Bookings</a>
+@elserole('employee')
+    <a href="{{ url('dashboard/my-own-bookings') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Bookings</a>
+@endrole
 
                     <div class="border-t border-gray-100"></div>
 

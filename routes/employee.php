@@ -16,11 +16,11 @@ Route::middleware(['auth', 'role:admin|employee'])
    Route::get('/dashboard', [EmployeeDashboardController::class, 'index'])
             ->name('dashboard.employee');
 
-            
+
                 //Bookings List employee
         Route::get('/my-own-bookings', [EmployeeBookingController::class, 'myBookings'])
             ->name('bookings.my');
-     
+
 
                     //Bookings List admin
         Route::get('/bookings', [EmployeeBookingController::class, 'index'])
@@ -29,11 +29,12 @@ Route::middleware(['auth', 'role:admin|employee'])
         Route::get('/bookings/pending', [EmployeeBookingController::class, 'pending'])
             ->name('bookings.pending');
 
-            Route::get('/bookings/{booking}', [EmployeeBookingController::class, 'show'])->name('bookings.show');
-     
-      
 
-    
+            Route::get('/bookings/{booking}', [EmployeeBookingController::class, 'show'])->name('bookings.show');
+
+
+
+
 
         // Actions
         // reschedual

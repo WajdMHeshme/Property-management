@@ -90,7 +90,7 @@
                             {{ $booking->property->city ?? '' }}
                         </p>
                     </div>
-       
+
 
 
                     {{-- Status Badge --}}
@@ -245,7 +245,7 @@
 
                 </div>
 
-            </div> 
+            </div>
 
         @empty
         @endforelse

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Booking;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class EmployeeBookingService
 {
@@ -17,23 +18,26 @@ class EmployeeBookingService
 
     public function approve(Booking $booking)
     {
-        
         if (!in_array($booking->status, ['pending', 'rescheduled'])) {
-            abort(422, 'Action not allowed. Booking must be pending or rescheduled.');
+            throw ValidationException::withMessages([
+                'status' => 'Action not allowed. Booking must be pending or rescheduled.'
+            ]);
         }
 
+        // only treat as validation error (user-friendly) — keep 403 authorization elsewhere (policy/controller)
         if ($this->hasTimeConflict(
             $booking->employee_id,
             $booking->scheduled_at,
             $booking->id
         )) {
-            abort(422, 'Employee has another booking at this time');
+            throw ValidationException::withMessages([
+                'scheduled_at' => 'Employee has another booking at this time'
+            ]);
         }
 
         $booking->update([
             'status' => 'approved',
             'rescheduled_at' => null
-
         ]);
 
         return $booking;
@@ -41,10 +45,9 @@ class EmployeeBookingService
 
     public function cancel(Booking $booking)
     {
-
         if (! in_array($booking->status, ['pending', 'approved','rescheduled'])) {
             throw new \Exception('Action not allowed');
-       
+
         }
 
         $booking->update([
@@ -56,19 +59,19 @@ class EmployeeBookingService
 
     public function reschedule(Booking $booking, $scheduleAt)
     {
-
         if ($this->hasTimeConflict(
             $booking->employee_id,
             $scheduleAt,
             $booking->id
         )) {
             throw new \Exception('Employee already has booking at this time');
-          
+
         }
 
-
         if (! in_array($booking->status, ['pending', 'approved', 'rescheduled'])) {
-            abort(422, 'Action not allowed');
+            throw ValidationException::withMessages([
+                'status' => 'Action not allowed'
+            ]);
         }
 
         $booking->update([
@@ -85,13 +88,14 @@ class EmployeeBookingService
      */
     public function complete(Booking $booking)
     {
-
         if ($booking->employee_id !== Auth::id()) {
-            abort(403, 'Forbidden');
+            abort(403, 'Forbidden'); // keep as 403 (authorization)
         }
 
         if (!in_array($booking->status, ['approved', 'rescheduled'])) {
-            abort(422, 'Action not allowed');
+            throw ValidationException::withMessages([
+                'status' => 'Action not allowed'
+            ]);
         }
 
         $booking->update([
@@ -102,9 +106,6 @@ class EmployeeBookingService
         return $booking;
     }
 
-    /**
-     * Carbon is a library for handling time and dates
-     */
     public function hasTimeConflict($employeeId, $scheduledAt, $excludeId = null)
     {
         if (empty($employeeId)) {
@@ -114,8 +115,7 @@ class EmployeeBookingService
         return Booking::where('employee_id', $employeeId)
             ->when(
                 $excludeId,
-                fn($q) =>
-                $q->where('id', '!=', $excludeId)
+                fn($q) => $q->where('id', '!=', $excludeId)
             )
             ->whereBetween('scheduled_at', [
                 Carbon::parse($scheduledAt)->subHour(),
@@ -132,9 +132,11 @@ class EmployeeBookingService
         if ($booking->employee_id !== Auth::id()) {
             abort(403, 'You are not allowed to reject this booking');
         }
-        // reject only if status pending
+
         if ($booking->status !== 'pending') {
-            abort(422, 'action is not allowed');
+            throw ValidationException::withMessages([
+                'status' => 'Action is not allowed'
+            ]);
         }
 
         $booking->update([
@@ -142,6 +144,7 @@ class EmployeeBookingService
             'rejection_reason' => $reason,
             'rejected_at' => now(),
         ]);
+
         return $booking;
     }
 }

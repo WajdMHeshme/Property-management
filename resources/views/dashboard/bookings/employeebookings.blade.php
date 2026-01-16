@@ -9,6 +9,30 @@
         My Bookings
     </h1>
 
+    {{-- Feedback messages --}}
+@if(session('status'))
+    <div class="mb-4 p-3 rounded bg-green-50 text-green-800">
+        {{ session('status') }}
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="mb-4 p-3 rounded bg-red-50 text-red-800">
+        {{ session('error') }}
+    </div>
+@endif
+
+@if($errors->any())
+    <div class="mb-4 p-3 rounded bg-red-50 text-red-800">
+        <ul class="list-disc pl-5">
+            @foreach ($errors->all() as $err)
+                <li>{{ $err }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+
     {{-- ================= Quick Tabs ================= --}}
     <div class="flex flex-wrap items-center gap-3 mb-8">
         @php
@@ -164,12 +188,12 @@
 
                             <form method="POST" action="{{ route('employee.bookings.reject', $booking->id) }}">
                                 @csrf @method('PATCH')
-      <button type="button" 
+      <button type="button"
         onclick="openRejectModal({{ $booking->id }})"
         class="px-3 py-1 rounded-full text-sm bg-red-50 border border-red-200 text-red-700 hover:bg-red-100">
     Reject
 </button>
-                                
+
                             </form>
 
                             <form method="POST" action="{{ route('employee.bookings.cancel', $booking->id) }}">
@@ -255,7 +279,7 @@
                             You don't have any bookings assigned yet.
                         @endif
                     </p>
-                   
+
                 </div>
             </div>
         @endif
@@ -279,7 +303,7 @@
             <form id="rejectForm" method="POST" action="">
                 @csrf
                 @method('PATCH')
-                
+
                 <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <h3 class="text-lg font-medium leading-6 text-gray-900" id="modal-title">Reject Booking</h3>
                     <div class="mt-4">
@@ -292,7 +316,7 @@
                         @enderror
                     </div>
                 </div>
-                
+
                 <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                     <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
                         Confirm Rejection
@@ -308,24 +332,24 @@
 <div id="rejectModal" class="fixed inset-0 z-50 hidden bg-gray-900 bg-opacity-50 flex items-center justify-center">
     <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
         <h3 class="text-xl font-bold text-gray-900 mb-4">Reject Booking</h3>
-        
+
         <form id="rejectForm" method="POST">
             @csrf
             @method('PATCH')
-            
+
             <div class="mb-4 text-left">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Why are you rejecting this?</label>
                 <textarea name="reason" required minlength="5"
-                          class="w-full border rounded-xl p-3 text-sm focus:ring-2 focus:ring-red-500 outline-none" 
+                          class="w-full border rounded-xl p-3 text-sm focus:ring-2 focus:ring-red-500 outline-none"
                           placeholder="Minimum 5 characters..."></textarea>
             </div>
 
             <div class="flex justify-end gap-3">
-                <button type="button" onclick="closeRejectModal()" 
+                <button type="button" onclick="closeRejectModal()"
                         class="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">
                     Cancel
                 </button>
-                <button type="submit" 
+                <button type="submit"
                         class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
                     Confirm Reject
                 </button>
@@ -338,9 +362,9 @@
   function openRejectModal(id) {
     const modal = document.getElementById('rejectModal');
     const form = document.getElementById('rejectForm');
-    let url = "{{ route('employee.bookings.reject', ':id') }}"; 
+    let url = "{{ route('employee.bookings.reject', ':id') }}";
     url = url.replace(':id', id);
-    
+
     form.action = url;
     modal.classList.remove('hidden');
 }

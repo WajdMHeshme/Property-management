@@ -37,6 +37,9 @@ class BookingMessageController extends Controller
             $booking,
             (int) $request->user()->id
         );
+        if ($messages instanceof \Illuminate\Database\Eloquent\Collection) {
+        $messages->load('sender:id,name'); 
+    }
 
         return response()->json($messages);
     }

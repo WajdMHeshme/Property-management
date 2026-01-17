@@ -51,50 +51,54 @@ class BookingPolicy
     /**
      * Employee approves booking
      */
-public function approve(User $user, Booking $booking): bool
-{
-    // employee can approve if:
-    // 1. assigned to him OR 2. not assigned yet
-    $canAssign = $user->hasRole('employee') && ($booking->employee_id == $user->id || is_null($booking->employee_id));
+    public function approve(User $user, Booking $booking): bool
+    {
 
-    return $canAssign && in_array($booking->status, ['pending', 'rescheduled']);
-}
+        $isAuthorized = $user->hasRole('employee') && ($booking->employee_id == $user->id || is_null($booking->employee_id));
+        return $isAuthorized && in_array($booking->status, ['pending', 'rescheduled']);
+    }
 
-public function employeeCancel(User $user, Booking $booking): bool
-{
-    // employee can cancel if:
-    // 1. assigned to him OR 2. not assigned yet
-    $canAssign = $user->hasRole('employee') && ($booking->employee_id == $user->id || is_null($booking->employee_id));
 
-    return $canAssign && in_array($booking->status, ['pending', 'approved', 'rescheduled']);
-}
+    /**
+     * Employee cancels booking
+     */
+    public function employeeCancel(User $user, Booking $booking): bool
+    {
+        return
+            $user->hasRole('employee') &&
+            $booking->employee_id === $user->id &&
+            in_array($booking->status, ['pending', 'approved', 'rescheduled']);
+    }
 
-public function reschedule(User $user, Booking $booking): bool
-{
-    $canAssign = $user->hasRole('employee') && ($booking->employee_id == $user->id || is_null($booking->employee_id));
 
-    return $canAssign && in_array($booking->status, ['pending', 'approved', 'rescheduled']);
-}
+    /**
+     *  Reschedule — Employee only
+     */
+    public function reschedule(User $user, Booking $booking): bool
+    {
+        return
+            $user->hasRole('employee') &&
+            $booking->employee_id === $user->id  &&
+            in_array($booking->status, ['pending', 'approved', 'rescheduled']);
+    }
 
-public function complete(User $user, Booking $booking): bool
-{
-    $canAssign = $user->hasRole('employee') && ($booking->employee_id == $user->id || is_null($booking->employee_id));
 
-    return $canAssign && $booking->status === 'approved';
-}
-
-public function reject(User $user, Booking $booking): bool
-{
-    $canAssign = $user->hasRole('employee') && ($booking->employee_id == $user->id || is_null($booking->employee_id));
-
-    return $canAssign && $booking->status === 'pending';
-}
+    /**
+     * Complete booking — employee only
+     */
+    public function complete(User $user, Booking $booking): bool
+    {
+        return
+            $user->hasRole('employee') &&
+            $booking->employee_id === $user->id &&
+            $booking->status === 'approved';
+    }
 
     public function reject(User $user, Booking $booking)
     {
         return
-            $user->hasRole('employee') || is_null($booking->employee_id) &&
+            $user->hasRole('employee') &&
             $booking->employee_id === $user->id &&
-            $booking->status === 'pending';
+            $booking->status  === 'pending';
     }
 }

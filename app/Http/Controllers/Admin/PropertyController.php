@@ -6,11 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePropertyRequest;
 use App\Http\Requests\UpdatePropertyRequest;
 use App\Models\Property;
+use App\Models\User;
 use App\Services\AmenityService;
 use App\Services\PropertyService;
+use App\Notifications\PropertyActionNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Arr;
 use Illuminate\View\View;
+use Illuminate\Support\Arr;
 
 class PropertyController extends Controller
 {
@@ -90,7 +93,15 @@ class PropertyController extends Controller
             );
         }
 
-        return redirect()->route('dashboard.properties.index')->with('success', __('messages.property.add_property'));
+        // Notify admins and employees about the new property
+        $title = $property->title ?? "Property #{$property->id}";
+        $by = auth()->user() ? auth()->user()->name : 'System';
+        $users = User::role(['admin', 'employee'])->get();
+        foreach ($users as $user) {
+            $user->notify(new PropertyActionNotification('created', $title, $by));
+        }
+
+        return redirect()->route('dashboard.properties.index')->with('success',  __('messages.property.add_property'));
     }
 
     public function edit(Property $property): View
@@ -108,14 +119,36 @@ class PropertyController extends Controller
 
         $this->propertyService->update($property, $data);
 
-        return redirect()->route('dashboard.properties.index')->with('success', __('messages.property.updated'));
+        // Refresh to get latest title (in case it was updated)
+        $property->refresh();
+
+        // Notify admins and employees about the update
+        $title = $property->title ?? "Property #{$property->id}";
+        $by = auth()->user() ? auth()->user()->name : 'System';
+        $users = User::role(['admin', 'employee'])->get();
+        foreach ($users as $user) {
+            $user->notify(new PropertyActionNotification('updated', $title, $by));
+        }
+
+        return redirect()->route('dashboard.properties.index')->with('success',  __('messages.property.updated'));
     }
 
     public function destroy(Property $property): RedirectResponse
     {
+        // capture title before deletion
+        $title = $property->title ?? "Property #{$property->id}";
+        $id = $property->id;
+        $by = auth()->user() ? auth()->user()->name : 'System';
+
         $this->propertyService->delete($property);
 
-        return redirect()->route('dashboard.properties.index')->with('success', __('messages.property.deleted'));
+        // Notify admins and employees about the deletion
+        $users = User::role(['admin', 'employee'])->get();
+        foreach ($users as $user) {
+            $user->notify(new PropertyActionNotification('deleted', $title, $by));
+        }
+
+        return redirect()->route('dashboard.properties.index')->with('success',  __('messages.property.deleted'));
     }
 
     public function show(Property $property): View

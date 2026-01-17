@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BookingRequest;
 use App\Http\Resources\BookingResource;
 use App\Models\Booking;
+use App\Models\User;
+use App\Notifications\BookingActionNotification;
 use App\Services\BookingService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -52,24 +54,45 @@ class BookingController extends Controller
      * @param BookingRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(BookingRequest $request)
-    {
-        try {
+public function store(BookingRequest $request)
+{
+    try {
+        $booking = $this->bookingService->create($request->validated());
 
-            $booking = $this->bookingService->create($request->validated());
-
-            return response()->json([
-                'message' => __('messages.booking.created'),
-                'data'    => new BookingResource($booking),
-            ], 201);
-
-        } catch (\Exception $e) {
-
-            return response()->json([
-                'message' => $e->getMessage(),
-            ], 422);
+        // ------------------------------
+        // Send notification to admins
+        // ------------------------------
+        $admins = User::role('admin')->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new BookingActionNotification(
+                action: 'created',
+                bookingId: $booking->id,
+                byUser: $booking->user->name ?? 'Customer'
+            ));
         }
+
+        // Optional: Send notification to employees (e.g., assigned employee)
+        $employees = User::role('employee')->get();
+        foreach ($employees as $employee) {
+            $employee->notify(new BookingActionNotification(
+                action: 'created',
+                bookingId: $booking->id,
+                byUser: $booking->user->name ?? 'Customer'
+            ));
+        }
+
+        return response()->json([
+            'message' => __('messages.booking.created'),
+            'data'    => new BookingResource($booking),
+        ], 201);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => $e->getMessage(),
+        ], 422);
     }
+}
+
 
     /**
      * Show details of a specific booking.
@@ -104,15 +127,37 @@ class BookingController extends Controller
      * @param Booking $booking
      * @return \Illuminate\Http\JsonResponse
      */
-    public function cancel(Booking $booking)
-    {
-        $this->authorize('cancel', $booking);
+public function cancel(Booking $booking)
+{
+    $this->authorize('cancel', $booking);
 
-        $booking = $this->bookingService->cancel($booking);
+    $booking = $this->bookingService->cancel($booking);
+    $byUser = $booking->user->name ?? 'Customer';
 
-        return response()->json([
-            'message' => __('messages.booking.canceled'),
-            'data'    => new BookingResource($booking),
-        ], 200);
+    // Send notification to Admins
+    $admins = User::role('admin')->get();
+    foreach ($admins as $admin) {
+        $admin->notify(new BookingActionNotification(
+            action: 'cancelled',
+            bookingId: $booking->id,
+            byUser: $byUser
+        ));
     }
+
+    // Send notification to Employees
+    $employees = User::role('employee')->get();
+    foreach ($employees as $employee) {
+        $employee->notify(new BookingActionNotification(
+            action: 'cancelled',
+            bookingId: $booking->id,
+            byUser: $byUser
+        ));
+    }
+
+    return response()->json([
+        'message' => __('messages.booking.canceled'),
+        'data'    => new BookingResource($booking),
+    ], 200);
+}
+
 }

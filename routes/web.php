@@ -36,6 +36,12 @@ use Illuminate\Support\Facades\Session;
 | Public Routes
 |--------------------------------------------------------------------------
 */
+
+Route::post('/dashboard/notifications/read', function () {
+    auth()->user()->unreadNotifications->markAsRead();
+    return back();
+})->name('notifications.read');
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -44,12 +50,12 @@ Route::view('/team', 'team')->name('team.index');
 
 // change language
    Route::get('lang/{locale}', function ($locale) {
-  
+
     if (in_array($locale, ['ar', 'en'])) {
-        
+
         Session::put('locale', $locale);
     }
-    
+
     return redirect()->back();
 });
 
@@ -83,7 +89,7 @@ Route::middleware(['auth', 'check.active', 'role:admin|employee'])
 
         abort(403, 'Unauthorized');
     })->name('index');
-  
+
     /*
     |--------------------------------------------------------------------------
     | Admin Routes
@@ -187,7 +193,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     });
-    
+
     });
 /*
 |--------------------------------------------------------------------------
@@ -196,4 +202,3 @@ Route::middleware('auth')->group(function () {
 */
 require __DIR__ . '/auth.php';
 require __DIR__ . '/employee.php';
-    

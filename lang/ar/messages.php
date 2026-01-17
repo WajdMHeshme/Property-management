@@ -57,7 +57,14 @@ return [
     'new_property' => 'عقار جديد',
     'admin_badge' => 'مدير',
     'employee_badge' => 'موظف',
+  
     ],
+    'logout_modal' => [
+    'title' => 'تأكيد تسجيل الخروج',
+    'message' => 'هل أنت متأكد أنك تريد تسجيل الخروج؟ ستحتاج إلى تسجيل الدخول مرة أخرى للوصول إلى لوحة التحكم.',
+    'confirm' => 'تسجيل الخروج',
+    'cancel' => 'إلغاء',
+],
     
     // Reports
     'reports' => [
@@ -222,8 +229,6 @@ return [
     'awaiting_customer_review' => 'بانتظار تقييم العميل',
    'pending_bookings' => 'الحجوزات المنتظرة',
    'all_bookings' =>'كل الحجوزات',
-
-
 
     'status' => [
         'pending' => 'قيد الانتظار',

@@ -35,6 +35,8 @@ return [
     'status_pending' => 'status_pending',
     'status_approved' => 'status_approved',
     'status_completed' => 'status_completed',
+     'Last_7_Days' => 'Last 7 Days',
+     'This_Month_(January 2026)' => '',
     ],
     
     // Sidebar

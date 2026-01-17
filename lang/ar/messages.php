@@ -220,7 +220,9 @@ return [
     'back_to_list' => 'العودة للقائمة',
     'review_after_completion' => 'سيظهر التقييم هنا بعد إتمام الحجز.',
     'awaiting_customer_review' => 'بانتظار تقييم العميل',
-   'Pending_Bookings' => 'الحجوزات المنتظرة',
+   'pending_bookings' => 'الحجوزات المنتظرة',
+   'all_bookings' =>'كل الحجوزات',
+
 
 
     'status' => [

@@ -50,8 +50,7 @@ class EmployeeBookingController extends Controller
         $this->authorize('view', $booking);
         return view('dashboard.bookings.show', compact('booking'));
     }
-
-    /**
+/**
      * Approve booking
      */
     public function approve(Booking $booking)
@@ -59,13 +58,11 @@ class EmployeeBookingController extends Controller
         try {
         $this->authorize('approve', $booking);
 
-if (is_null($booking->employee_id)) {
-    $booking->employee_id = Auth::id();
-    $booking->save();
-}
-
-
-
+        if (is_null($booking->employee_id)) {
+            $booking->update(['employee_id' => Auth::id()]);
+        }
+       
+      
         $booking = $this->employeeBookingService->approve($booking);
           return redirect()
             ->route('employee.bookings.show', $booking->id)
@@ -132,8 +129,7 @@ if (is_null($booking->employee_id)) {
             ->route('employee.bookings.show', $booking->id)
             ->with('status',  __('messages.booking.rejected'));
     }
-
-    /**
+/**
      * Employee's own bookings
      */
     public function myBookings(Request $request)
@@ -141,15 +137,8 @@ if (is_null($booking->employee_id)) {
         $employee = $request->user();
         $status = $request->query('status');
 
-$query = Booking::with(['user', 'property'])
-    ->where(function ($q) use ($employee) {
-        $q->where('employee_id', $employee->id)        // الحجوزات المخصصة له
-          ->orWhere(function($q2) {                   // أو الحجوزات الجديدة
-              $q2->whereNull('employee_id')
-                 ->where('status', 'pending');
-          });
-    });
-
+        $query = Booking::with(['user', 'property'])
+            ->where('employee_id', $employee->id);
 
         if ($status && in_array($status, ['pending', 'approved', 'completed', 'rejected', 'canceled', 'rescheduled'])) {
             $query->where('status', $status);

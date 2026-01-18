@@ -17,7 +17,7 @@
         </div>
 
         {{-- Export Button --}}
-        <a href="{{ route('dashboard.reports.bookings.export') }}"
+        <a href="{{ route('dashboard.reports.properties.export') }}"
            class="px-4 py-2 rounded-xl text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 transition shadow-sm">
             {{ __('messages.reports.export') }}
         </a>
@@ -112,8 +112,8 @@
                             <td class="px-4 py-3 font-medium text-gray-900">{{ $property->title }}</td>
                             <td class="px-4 py-3 text-gray-600">{{ $property->city }}</td>
                             <td class="px-4 py-3">
-                                <span class="px-2 py-1 rounded-md text-xs font-medium 
-                                    {{ $property->status == 'available' ? 'bg-green-100 text-green-700' : 
+                                <span class="px-2 py-1 rounded-md text-xs font-medium
+                                    {{ $property->status == 'available' ? 'bg-green-100 text-green-700' :
                                        ($property->status == 'booked' ? 'bg-yellow-100 text-yellow-700' : 'bg-blue-100 text-blue-700') }}">
                                     {{ __('messages.property.status_list.' . $property->status) }}
                                 </span>

@@ -247,7 +247,7 @@ ceo and founder **Alaa Darwish**
 |------|------|
 | Lead Developer | Ebla zyab ali |
 | Assistant Developer | Hasan Dayoub |
-| Frontend Specialist | Wajd Heshme |
+|  full stack | Wajd Heshme |
 | Backend Developer | Amin Ali |
 | Database Specialist | Enas Alhmoy|
 | Backend Developer | Abdullah Shuraitah |

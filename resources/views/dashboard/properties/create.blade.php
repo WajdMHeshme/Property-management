@@ -83,23 +83,9 @@
                 </select>
             </div>
 
-            <!-- Furnished -->
-            <div>
-                <label class="inline-flex items-center">
-                    <input type="checkbox" name="is_furnished" value="1" {{ old('is_furnished') ? 'checked' : '' }}
-                           class="form-checkbox h-5 w-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-400">
-                    <span class="ml-2 text-gray-700">Furnished</span>
-                </label>
-            </div>
 
-            <!-- Description -->
-            <div>
-                <label class="inline-flex items-center">
-                    <input type="checkbox" name="is_furnished" value="1" {{ old('is_furnished') ? 'checked' : '' }}
-                           class="form-checkbox h-5 w-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-400">
-                    <span class="ml-2 text-gray-700">{{ __('messages.property.furnished_label') }}</span>
-                </label>
-            </div>
+
+
 
             <div>
                 <label class="block mb-2 font-medium text-gray-700">{{ __('messages.property.description_label') }}</label>
@@ -108,42 +94,6 @@
                           placeholder="Add detailed description...">{{ old('description') }}</textarea>
             </div>
 
-            <!-- Property Images Dropzone -->
-            <div>
-                <label class="block mb-2 font-medium text-gray-700">Property Images</label>
-
-                <!-- Dropzone -->
-                <div id="dropzone"
-                     class="w-full border-2 border-dashed border-gray-300 rounded-2xl p-8 flex flex-col items-center justify-center cursor-pointer hover:border-indigo-400 transition relative"
-                     onclick="document.getElementById('images').click()">
-
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M7 16V4h10v12m-5-4v8m-4 0h8" />
-                    </svg>
-                    <p class="text-gray-500 text-center">Click or drag images here to upload</p>
-
-                    <!-- Preview inside dropzone -->
-                    <div id="preview" class="mt-4 flex flex-wrap gap-4 w-full justify-center"></div>
-                </div>
-
-                <!-- Hidden input -->
-                <input id="images" type="file" name="images[]" multiple accept="image/*" class="hidden" onchange="previewImages()">
-            </div>
-
-            <!-- Amenities -->
-            <div>
-                <label class="block mb-2 font-medium text-gray-700">Amenities</label>
-                <div class="flex flex-wrap gap-3">
-                    @foreach($amenities as $a)
-                        <label class="inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 hover:bg-indigo-50 cursor-pointer">
-                            <input type="checkbox" name="amenity_ids[]" value="{{ $a->id }}"
-                                   class="form-checkbox h-5 w-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-400">
-                            <span class="ml-2 text-gray-700">{{ $a->name }}</span>
-                        </label>
-                    @endforeach
-                </div>
-            </div>
 
             <div>
                 <label class="block mb-2 font-medium text-gray-700">{{ __('messages.property.images_label') }}</label>

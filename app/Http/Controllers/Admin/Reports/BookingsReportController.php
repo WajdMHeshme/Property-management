@@ -12,6 +12,9 @@ class BookingsReportController extends Controller
     {
         $this->middleware(['auth', 'check.active', 'role:admin']);
     }
+    /**
+     * * Display the bookings report dashboard with statistics
+     */
 
     public function index()
     {
@@ -19,6 +22,9 @@ class BookingsReportController extends Controller
 
         return view('dashboard.reports.bookings', compact('stats'));
     }
+    /**
+     * * Compile comprehensive statistics including counts, trends, and regional data.
+     */
 
     public function getStats()
     {
@@ -61,6 +67,9 @@ class BookingsReportController extends Controller
         ];
 
     }
+    /**
+     * * Export the calculated statistics into a downloadable PDF report
+     */
 
     public function export()
     {

@@ -13,7 +13,7 @@ use App\Notifications\PropertyActionNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Arr;
 use Illuminate\View\View;
-use Illuminate\Support\Arr;
+
 
 class PropertyController extends Controller
 {
